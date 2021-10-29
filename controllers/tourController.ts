@@ -79,3 +79,21 @@ export const createTour = (request: Request, response: Response) => {
     }
   );
 };
+
+export const updateTour = (request: Request, response: Response) => {
+  const tour = tours.find((tour) => +request.params.id === tour.id);
+
+  if (!tour) {
+    response.status(404).send({
+      status: ResponseStatus.FAILURE,
+      message: 'Invalid ID',
+    });
+  }
+
+  response.status(200).send({
+    status: ResponseStatus.SUCCESS,
+    data: {
+      tour,
+    },
+  });
+};
