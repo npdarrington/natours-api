@@ -1,4 +1,7 @@
 import fs from 'fs';
+import { Request, Response } from 'express';
+
+import { ResponseStatus } from '../utils/responseStatus';
 
 interface SimpleTour {
   id: number;
@@ -19,3 +22,21 @@ interface SimpleTour {
 const tours: SimpleTour[] = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, 'utf-8')
 );
+
+export const getAllTours = (request: Request, response: Response) => {
+  if (!tours.length) {
+    response.status(500).json({
+      status: ResponseStatus.FAILURE,
+      message:
+        'Something went wrong on the server. Please try again or contact system administrator.',
+    });
+  }
+
+  response.status(200).json({
+    status: ResponseStatus.SUCCESS,
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
+};
