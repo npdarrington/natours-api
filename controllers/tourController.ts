@@ -60,3 +60,22 @@ export const getTour = (request: Request, response: Response) => {
     },
   });
 };
+
+export const createTour = (request: Request, response: Response) => {
+  const newId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({ id: newId }, request.body);
+  tours.push(newTour);
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      if (err) return console.log('File was not written!');
+      response.status(201).json({
+        status: ResponseStatus.SUCCESS,
+        data: {
+          tour: newTour,
+        },
+      });
+    }
+  );
+};
