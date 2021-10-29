@@ -40,3 +40,23 @@ export const getAllTours = (request: Request, response: Response) => {
     },
   });
 };
+
+export const getTour = (request: Request, response: Response) => {
+  const paramId = +request.params.id;
+  const tour = tours.find((tour) => paramId === tour.id);
+
+  if (!tour) {
+    return response.status(404).send({
+      status: ResponseStatus.FAILURE,
+      message: 'Invalid ID',
+    });
+  }
+
+  response.status(200).json({
+    status: ResponseStatus.SUCCESS,
+    results: 1,
+    data: {
+      tour,
+    },
+  });
+};
