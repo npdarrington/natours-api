@@ -1,12 +1,8 @@
-import express, { Request, Response } from 'express';
-import dotenv from 'dotenv';
+import express from 'express';
 
-dotenv.config();
-const app = express();
+import tourRouter from './routes/tourRoutes';
 
-app.get('/', (request: Request, response: Response): void => {
-  response.status(200).send('Hello from the server side!');
-});
+export const app = express();
+app.use(express.json());
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`App running on Port ${port}`));
+app.use('/api/v1/tours', tourRouter);
