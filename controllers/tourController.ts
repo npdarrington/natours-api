@@ -97,3 +97,19 @@ export const updateTour = (request: Request, response: Response) => {
     },
   });
 };
+
+export const deleteTour = (request: Request, response: Response) => {
+  const tour = tours.find((tour) => +request.params.id === tour.id);
+
+  if (!tour) {
+    response.status(404).send({
+      status: ResponseStatus.FAILURE,
+      message: 'Invalid ID',
+    });
+  }
+
+  response.status(204).send({
+    status: ResponseStatus.SUCCESS,
+    data: null,
+  });
+};
