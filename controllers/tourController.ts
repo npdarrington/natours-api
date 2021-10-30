@@ -2,6 +2,7 @@ import fs from 'fs';
 import { Request, Response, NextFunction } from 'express';
 
 import { ResponseStatus } from '../utils/responseStatus';
+import { ErrorMessages } from '../utils/errorMessages';
 
 interface SimpleTour {
   id: number;
@@ -30,9 +31,10 @@ export const validateID = (
   val: number
 ) => {
   if (!val || val > tours.length || val < 0) {
-    return response
-      .status(404)
-      .send({ status: ResponseStatus.FAILURE, message: 'Invalid ID' });
+    return response.status(404).send({
+      status: ResponseStatus.FAILURE,
+      message: ErrorMessages.INVALID_ID,
+    });
   }
   next();
 };
@@ -41,8 +43,7 @@ export const getAllTours = (request: Request, response: Response) => {
   if (!tours.length) {
     response.status(500).json({
       status: ResponseStatus.FAILURE,
-      message:
-        'Something went wrong on the server. Please try again or contact system administrator.',
+      message: ErrorMessages.SERVER_OFFLINE,
     });
   }
 
@@ -95,7 +96,7 @@ export const updateTour = (request: Request, response: Response) => {
   if (!tour) {
     response.status(404).send({
       status: ResponseStatus.FAILURE,
-      message: 'Invalid ID',
+      message: ErrorMessages.INVALID_ID,
     });
   }
 
@@ -113,7 +114,7 @@ export const deleteTour = (request: Request, response: Response) => {
   if (!tour) {
     response.status(404).send({
       status: ResponseStatus.FAILURE,
-      message: 'Invalid ID',
+      message: ErrorMessages.INVALID_ID,
     });
   }
 
