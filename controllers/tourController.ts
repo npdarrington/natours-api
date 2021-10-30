@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 import { TourModel } from '../models/tourModel';
 
@@ -41,7 +41,7 @@ export const getAllTours = async (request: Request, response: Response) => {
 
 export const getTour = async (request: Request, response: Response) => {
   try {
-    const tour = TourModel.findById(+request.params.id);
+    const tour = TourModel.findById(request.params.id);
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
       data: {
@@ -76,7 +76,7 @@ export const createTour = async (request: Request, response: Response) => {
 export const updateTour = async (request: Request, response: Response) => {
   try {
     const tour = await TourModel.findByIdAndUpdate(
-      +request.params.id,
+      request.params.id,
       request.body,
       {
         new: true,
@@ -98,4 +98,20 @@ export const updateTour = async (request: Request, response: Response) => {
   }
 };
 
-export const deleteTour = (request: Request, response: Response) => {};
+export const deleteTour = async (request: Request, response: Response) => {
+  try {
+    const result = await TourModel.findByIdAndDelete(request.params.id);
+    if (result) {
+      response.status(204).json({
+        status: ResponseStatus.SUCCESS,
+      });
+    } else {
+      throw Error;
+    }
+  } catch (error) {
+    response.status(400).json({
+      status: ResponseStatus.FAILURE,
+      message: ErrorMessages.SERVER_OFFLINE,
+    });
+  }
+};
