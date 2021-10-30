@@ -9,7 +9,14 @@ const dbConn: string | undefined = process.env.DATABASE?.replace(
 );
 
 if (dbConn) {
-  mongoose.connect(dbConn).then(() => console.log('DB connection successful'));
+  mongoose
+    .connect(dbConn, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+    })
+    .then(() => console.log('DB connection successful'));
 }
 
 const port = process.env.PORT || 3000;

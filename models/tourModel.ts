@@ -1,6 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
-interface Tour {
+interface Tour extends Document {
   name: string;
   rating?: number;
   price: number;
