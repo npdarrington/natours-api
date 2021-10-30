@@ -39,7 +39,22 @@ export const getAllTours = async (request: Request, response: Response) => {
   }
 };
 
-export const getTour = (request: Request, response: Response) => {};
+export const getTour = async (request: Request, response: Response) => {
+  try {
+    const tour = TourModel.findById(+request.params.id);
+    response.status(200).json({
+      status: ResponseStatus.SUCCESS,
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
+    response.status(404).json({
+      status: ResponseStatus.FAILURE,
+      message: ErrorMessages.TOUR_DOES_NOT_EXIST,
+    });
+  }
+};
 
 export const createTour = async (request: Request, response: Response) => {
   try {
