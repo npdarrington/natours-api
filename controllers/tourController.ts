@@ -73,6 +73,29 @@ export const createTour = async (request: Request, response: Response) => {
   }
 };
 
-export const updateTour = (request: Request, response: Response) => {};
+export const updateTour = async (request: Request, response: Response) => {
+  try {
+    const tour = await TourModel.findByIdAndUpdate(
+      +request.params.id,
+      request.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    response.status(200).json({
+      status: ResponseStatus.SUCCESS,
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
+    response.status(400).json({
+      status: ResponseStatus.FAILURE,
+      message: ErrorMessages.SERVER_OFFLINE,
+    });
+  }
+};
 
 export const deleteTour = (request: Request, response: Response) => {};
