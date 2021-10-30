@@ -21,7 +21,23 @@ interface SimpleTour {
   startDates: string[];
 }
 
-export const getAllTours = (request: Request, response: Response) => {};
+export const getAllTours = async (request: Request, response: Response) => {
+  const tours = await TourModel.find();
+  try {
+    response.status(200).json({
+      status: ResponseStatus.SUCCESS,
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {
+    response.status(500).json({
+      status: ResponseStatus.FAILURE,
+      message: ErrorMessages.SERVER_OFFLINE,
+    });
+  }
+};
 
 export const getTour = (request: Request, response: Response) => {};
 
