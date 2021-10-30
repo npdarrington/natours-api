@@ -22,21 +22,6 @@ interface SimpleTour {
   startDates: string[];
 }
 
-export const validateID = (
-  request: Request,
-  response: Response,
-  next: NextFunction,
-  val: number
-) => {
-  if (!val || val > tours.length || val < 0) {
-    return response.status(404).send({
-      status: ResponseStatus.FAILURE,
-      message: ErrorMessages.INVALID_ID,
-    });
-  }
-  next();
-};
-
 export const getAllTours = (request: Request, response: Response) => {};
 
 export const getTour = (request: Request, response: Response) => {};
