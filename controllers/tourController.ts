@@ -60,6 +60,10 @@ export const getTour = (request: Request, response: Response) => {
   const tour = tours.find((tour) => +request.params.id === tour.id);
 
   if (!tour) {
+    response.status(404).json({
+      status: ResponseStatus.FAILURE,
+      message: ErrorMessages.TOUR_DOES_NOT_EXIST,
+    });
   }
 
   response.status(200).json({
@@ -94,9 +98,9 @@ export const updateTour = (request: Request, response: Response) => {
   const tour = tours.find((tour) => +request.params.id === tour.id);
 
   if (!tour) {
-    response.status(404).send({
+    response.status(404).json({
       status: ResponseStatus.FAILURE,
-      message: ErrorMessages.INVALID_ID,
+      message: ErrorMessages.TOUR_DOES_NOT_EXIST,
     });
   }
 
@@ -112,9 +116,9 @@ export const deleteTour = (request: Request, response: Response) => {
   const tour = tours.find((tour) => +request.params.id === tour.id);
 
   if (!tour) {
-    response.status(404).send({
+    response.status(404).json({
       status: ResponseStatus.FAILURE,
-      message: ErrorMessages.INVALID_ID,
+      message: ErrorMessages.TOUR_DOES_NOT_EXIST,
     });
   }
 
