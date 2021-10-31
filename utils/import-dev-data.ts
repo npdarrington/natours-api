@@ -25,10 +25,19 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}../dev-data/tours-simple.json`, 'utf-8')
 );
 
-const importData = async () => {
+const importTours = async () => {
   try {
     await TourModel.create(tours);
-    console.log('Data successfully loaded!');
+    console.log('Tours successfully imported!');
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteAllTours = async () => {
+  try {
+    await TourModel.deleteMany({});
+    console.log('Tours deleted successfully!');
   } catch (error) {
     console.log(error);
   }
