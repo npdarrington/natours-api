@@ -1,6 +1,6 @@
 import { Schema, model, Document } from 'mongoose';
 
-export interface Tour extends Document {
+interface Tour extends Document {
   name: string;
   duration: number;
   maxGroupSize: number;
