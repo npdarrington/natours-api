@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { TourModel, Tour } from '../models/tourModel';
+import { TourModel } from '../models/tourModel';
 
 import { ResponseStatus } from '../utils/responseStatus';
 import { ErrorMessages } from '../utils/errorMessages';
