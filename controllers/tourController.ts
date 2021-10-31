@@ -1,25 +1,9 @@
 import { Request, Response } from 'express';
 
-import { TourModel } from '../models/tourModel';
+import { TourModel, Tour } from '../models/tourModel';
 
 import { ResponseStatus } from '../utils/responseStatus';
 import { ErrorMessages } from '../utils/errorMessages';
-
-interface SimpleTour {
-  id: number;
-  name: string;
-  duration: number;
-  maxGroupSize: number;
-  difficulty: string;
-  ratingsAverage: number;
-  ratingsQuantity: number;
-  price: number;
-  summary: string;
-  description: string;
-  imageCover: string;
-  images: string[];
-  startDates: string[];
-}
 
 export const getAllTours = async (request: Request, response: Response) => {
   const tours = await TourModel.find();
