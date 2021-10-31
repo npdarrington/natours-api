@@ -22,7 +22,7 @@ if (dbConn) {
 }
 
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}../dev-data/tours-simple.json`, 'utf-8')
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, 'utf-8')
 );
 
 const importTours = async () => {
@@ -32,6 +32,7 @@ const importTours = async () => {
   } catch (error) {
     console.log(error);
   }
+  process.exit();
 };
 
 const deleteAllTours = async () => {
@@ -41,4 +42,13 @@ const deleteAllTours = async () => {
   } catch (error) {
     console.log(error);
   }
+  process.exit();
 };
+
+if (process.argv[2] === '--import') {
+  importTours();
+}
+
+if (process.argv[2] === '--delete') {
+  deleteAllTours();
+}
