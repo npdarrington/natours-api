@@ -5,6 +5,10 @@ import { TourModel } from '../models/tourModel';
 import { ResponseStatus } from '../utils/responseStatus';
 import { ErrorMessages } from '../utils/errorMessages';
 
+const formatStringForQuery = (queryString: string): string => {
+  return queryString.split(',').join(' ');
+};
+
 export const getAllTours = async (request: Request, response: Response) => {
   try {
     //* Filtering query string
@@ -23,11 +27,19 @@ export const getAllTours = async (request: Request, response: Response) => {
 
     //* Sorting
     if (request.query.sort) {
-      const convertQueryToString = request.query.sort as string;
-      const sortBy = convertQueryToString.split(',').join(' ');
+      const queryAsString = request.query.sort as string;
+      const sortBy = formatStringForQuery(queryAsString);
       query = query.sort(sortBy);
     } else {
       query = query.sort('-createdAt');
+    }
+
+    if (request.query.fields) {
+      const fields = request.query.fields as string;
+      const parseString = formatStringForQuery(fields);
+      query = query.select(parseString);
+    } else {
+      query = query.select('-__v');
     }
 
     const tours = await query;
