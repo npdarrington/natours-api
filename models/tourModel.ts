@@ -1,6 +1,6 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-interface Tour extends Document {
+interface Tour {
   name: string;
   duration: number;
   maxGroupSize: number;
@@ -66,7 +66,7 @@ const tourSchema = new Schema<Tour>({
   images: [String],
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: new Date(Date.now()),
   },
   startDates: [Date],
 });
