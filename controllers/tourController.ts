@@ -20,6 +20,16 @@ export const getAllTours = async (request: Request, response: Response) => {
     );
 
     let query = TourModel.find(JSON.parse(queryString));
+
+    //* Sorting
+    if (request.query.sort) {
+      const convertQueryToString = request.query.sort as string;
+      const sortBy = convertQueryToString.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
+
     const tours = await query;
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
