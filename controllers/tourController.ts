@@ -34,12 +34,27 @@ export const getAllTours = async (request: Request, response: Response) => {
       query = query.sort('-createdAt');
     }
 
+    //* Fields
     if (request.query.fields) {
-      const fields = request.query.fields as string;
+      let fields = request.query.fields as string;
+      fields += ',-__v';
       const parseString = formatStringForQuery(fields);
       query = query.select(parseString);
     } else {
       query = query.select('-__v');
+    }
+
+    //* Pagination
+    if (request.query.page && request.query.limit) {
+      const limit = +request.query.limit;
+      const skip = (+request.query.page - 1) * limit;
+      const numTours = await TourModel.countDocuments();
+
+      if (skip >= numTours) throw new Error('This page does not exist');
+
+      query = query.skip(skip).limit(limit);
+    } else {
+      query = query.limit(100);
     }
 
     const tours = await query;
