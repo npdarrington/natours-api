@@ -6,8 +6,14 @@ import { ResponseStatus } from '../utils/responseStatus';
 import { ErrorMessages } from '../utils/errorMessages';
 
 export const getAllTours = async (request: Request, response: Response) => {
-  const tours = await TourModel.find();
   try {
+    //* Filtering query string
+    const queryObj = { ...request.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let query = TourModel.find(queryObj);
+    const tours = await query;
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
       results: tours.length,
