@@ -12,7 +12,14 @@ export const getAllTours = async (request: Request, response: Response) => {
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    let query = TourModel.find(queryObj);
+    //* Advanced Filtering
+    let queryString = JSON.stringify(queryObj);
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`
+    );
+
+    let query = TourModel.find(JSON.parse(queryString));
     const tours = await query;
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
