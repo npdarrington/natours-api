@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import slugify from 'slugify';
 
 export interface Tour {
   name: string;
@@ -15,6 +16,7 @@ export interface Tour {
   images?: string[];
   createdAt: Date;
   startDates: Date[];
+  slug: string;
 }
 
 const tourSchema = new Schema<Tour>({
@@ -70,6 +72,12 @@ const tourSchema = new Schema<Tour>({
     select: false,
   },
   startDates: [Date],
+  slug: String,
+});
+
+tourSchema.pre('save', function (next: Function) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
 });
 
 export const TourModel = model<Tour>('Tour', tourSchema);
