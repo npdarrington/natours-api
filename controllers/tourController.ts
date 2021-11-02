@@ -1,63 +1,19 @@
 import { Request, Response } from 'express';
 
-import { TourModel } from '../models/tourModel';
+import { TourModel, Tour } from '../models/tourModel';
+import { APIFeatures } from '../utils/ApiFeatures';
 
 import { ResponseStatus } from '../utils/responseStatus';
 import { ErrorMessages } from '../utils/errorMessages';
 
-const formatStringForQuery = (queryString: string): string => {
-  return queryString.split(',').join(' ');
-};
-
 export const getAllTours = async (request: Request, response: Response) => {
   try {
-    //* Filtering query string
-    const queryObj = { ...request.query };
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach((el) => delete queryObj[el]);
-
-    //* Advanced Filtering
-    let queryString = JSON.stringify(queryObj);
-    queryString = queryString.replace(
-      /\b(gte|gt|lte|lt)\b/g,
-      (match) => `$${match}`
-    );
-
-    let query = TourModel.find(JSON.parse(queryString));
-
-    //* Sorting
-    if (request.query.sort) {
-      const queryAsString = request.query.sort as string;
-      const sortBy = formatStringForQuery(queryAsString);
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt');
-    }
-
-    //* Fields
-    if (request.query.fields) {
-      let fields = request.query.fields as string;
-      fields += ',-__v';
-      const parseString = formatStringForQuery(fields);
-      query = query.select(parseString);
-    } else {
-      query = query.select('-__v');
-    }
-
-    //* Pagination
-    if (request.query.page && request.query.limit) {
-      const limit = +request.query.limit;
-      const skip = (+request.query.page - 1) * limit;
-      const numTours = await TourModel.countDocuments();
-
-      if (skip >= numTours) throw new Error('This page does not exist');
-
-      query = query.skip(skip).limit(limit);
-    } else {
-      query = query.limit(100);
-    }
-
-    const tours = await query;
+    const features = new APIFeatures<Tour>(TourModel.find(), request.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const tours = await features.query;
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
       results: tours.length,
