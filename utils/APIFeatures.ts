@@ -19,7 +19,7 @@ export class APIFeatures<T> {
       /\b(gte|gt|lte|lt)\b/g,
       (match) => `$${match}`
     );
-    this.query.find(JSON.parse(advFilter));
+    this.query = this.query.find(JSON.parse(advFilter));
     return this;
   }
 
@@ -30,6 +30,17 @@ export class APIFeatures<T> {
       this.query = this.query.sort(sortBy);
     } else {
       this.query = this.query.sort('-createdAt');
+    }
+    return this;
+  }
+
+  limitFields(): APIFeatures<T> {
+    if (this.queryString.fields) {
+      let fields = this.queryString.fields as string;
+      const parseString = this.formatStringForQuery(fields);
+      this.query = this.query.select(parseString);
+    } else {
+      this.query = this.query.select('-__v');
     }
     return this;
   }
