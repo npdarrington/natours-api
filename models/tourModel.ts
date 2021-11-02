@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-interface Tour {
+export interface Tour {
   name: string;
   duration: number;
   maxGroupSize: number;
