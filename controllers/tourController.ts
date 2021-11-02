@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { TourModel, Tour } from '../models/tourModel';
-import { APIFeatures } from '../utils/ApiFeatures';
+import { APIFeatures } from '../utils/APIFeatures';
 
 import { ResponseStatus } from '../utils/responseStatus';
 import { ErrorMessages } from '../utils/errorMessages';
