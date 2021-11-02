@@ -45,6 +45,17 @@ export class APIFeatures<T> {
     return this;
   }
 
+  paginate(): APIFeatures<T> {
+    if (this.queryString.page && this.queryString.limit) {
+      const limit = +this.queryString.limit;
+      const skip = (+this.queryString.page - 1) * limit;
+      this.query = this.query.skip(skip).limit(limit);
+    } else {
+      this.query = this.query.limit(100);
+    }
+    return this;
+  }
+
   formatStringForQuery = (queryString: string): string => {
     return queryString.split(',').join(' ');
   };
