@@ -9,7 +9,7 @@ export class APIFeatures<T> {
     public queryString: { [key: string]: QueryArgs }
   ) {}
 
-  filter(): void {
+  filter(): APIFeatures<T> {
     const queryObj = { ...this.queryString };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObj[el]);
@@ -20,5 +20,21 @@ export class APIFeatures<T> {
       (match) => `$${match}`
     );
     this.query.find(JSON.parse(advFilter));
+    return this;
   }
+
+  sort(): APIFeatures<T> {
+    if (this.queryString.sort) {
+      const queryAsString = this.queryString.sort as string;
+      const sortBy = this.formatStringForQuery(queryAsString);
+      this.query = this.query.sort(sortBy);
+    } else {
+      this.query = this.query.sort('-createdAt');
+    }
+    return this;
+  }
+
+  formatStringForQuery = (queryString: string): string => {
+    return queryString.split(',').join(' ');
+  };
 }
