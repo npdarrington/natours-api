@@ -25,6 +25,8 @@ const tourSchema = new Schema<Tour>({
     required: [true, 'A tour must have a name'],
     unique: true,
     trim: true,
+    maxlength: [40, 'A tour name must have less or equal to 40 characters'],
+    minlength: [10, 'A tour name must have more or equal to 10 characters'],
   },
   duration: {
     type: Number,
