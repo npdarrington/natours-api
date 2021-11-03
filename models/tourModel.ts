@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose';
 import slugify from 'slugify';
-import validator from 'validator';
 
 export interface Tour {
   name: string;
