@@ -12,8 +12,8 @@ export class AppErrorHandler extends Error {
   constructor(public message: string, public statusCode: number) {
     super(message);
     this.status = `${statusCode}`.startsWith('4')
-      ? ResponseStatus.ERROR
-      : ResponseStatus.FAILURE;
+      ? ResponseStatus.FAILURE
+      : ResponseStatus.ERROR;
     this.isOperational = true;
     Error.captureStackTrace(this, this.constructor);
   }
