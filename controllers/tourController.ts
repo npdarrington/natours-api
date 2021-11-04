@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { TourModel, Tour } from '../models/tourModel';
 import { APIFeatures } from '../utils/APIFeatures';
 import { asyncTryCatch } from '../utils/asyncTryCatch';
+import { AppErrorHandler } from '../utils/AppErrorHandler';
 
 import { ResponseStatus } from '../utils/responseStatus';
 
@@ -28,6 +29,12 @@ export const getAllTours = asyncTryCatch(
 export const getTour = asyncTryCatch(
   async (request: Request, response: Response, next: NextFunction) => {
     const tour = await TourModel.findById(request.params.id);
+
+    if (!tour) {
+      return next(
+        AppErrorHandler.invokeError(`No tour found with that ID`, 404)
+      );
+    }
 
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
@@ -62,6 +69,12 @@ export const updateTour = asyncTryCatch(
       }
     );
 
+    if (!tour) {
+      return next(
+        AppErrorHandler.invokeError(`No tour found with that ID`, 404)
+      );
+    }
+
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
       data: {
@@ -73,14 +86,16 @@ export const updateTour = asyncTryCatch(
 
 export const deleteTour = asyncTryCatch(
   async (request: Request, response: Response, next: NextFunction) => {
-    const result = await TourModel.findByIdAndDelete(request.params.id);
+    const tour = await TourModel.findByIdAndDelete(request.params.id);
 
-    if (result) {
-      response.status(204).json({
-        status: ResponseStatus.SUCCESS,
-      });
-    } else {
-      throw Error;
+    if (!tour) {
+      return next(
+        AppErrorHandler.invokeError(`No tour found with that ID`, 404)
+      );
     }
+
+    response.status(200).json({
+      status: ResponseStatus.SUCCESS,
+    });
   }
 );
