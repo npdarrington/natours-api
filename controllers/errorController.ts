@@ -7,6 +7,7 @@ type ErrorObject = {
   error?: string;
   message: string;
   stack?: string;
+  isOperational?: boolean;
 };
 
 const sendErrorDev = (error: ErrorObject, response: Response): void => {
@@ -19,10 +20,18 @@ const sendErrorDev = (error: ErrorObject, response: Response): void => {
 };
 
 const sendErrorProd = (error: ErrorObject, response: Response): void => {
-  response.status(error.statusCode).json({
-    status: error.status,
-    message: error.message,
-  });
+  if (error.isOperational) {
+    response.status(error.statusCode).json({
+      status: error.status,
+      message: error.message,
+    });
+  } else {
+    console.error(`Error: `, error);
+    response.status(500).json({
+      status: ResponseStatus.ERROR,
+      message: 'Something went wrong on the server',
+    });
+  }
 };
 
 export const globalErrorHandler: ErrorRequestHandler = (
