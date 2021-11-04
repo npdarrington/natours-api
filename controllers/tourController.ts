@@ -27,7 +27,7 @@ export const getAllTours = asyncTryCatch(
 
 export const getTour = asyncTryCatch(
   async (request: Request, response: Response, next: NextFunction) => {
-    const tour = TourModel.findById(request.params.id);
+    const tour = await TourModel.findById(request.params.id);
 
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
