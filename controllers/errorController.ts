@@ -13,7 +13,17 @@ type ErrorObject = {
   path?: string;
   value?: string;
   errmsg?: string;
+  errors?: ValidationObject[];
 };
+
+interface ValidationObject {
+  message: string;
+  name: string;
+  properties: { [key: string]: string | string[] };
+  kind: string;
+  path: string;
+  value: string;
+}
 
 const sendErrorDev = (error: ErrorObject, response: Response): void => {
   response.status(error.statusCode).json({
@@ -49,6 +59,18 @@ const handleDuplicateFieldsDB = (error: ErrorObject): AppErrorHandler => {
   return AppErrorHandler.invokeError(message, 400);
 };
 
+const handleValidationErrorDB = (error: ErrorObject): AppErrorHandler => {
+  if (error.errors) {
+    const errors = Object.values(error.errors).map((el) => el.message);
+    const message = `Invalid input data: ${errors.join('. ')}`;
+    return AppErrorHandler.invokeError(message, 400);
+  }
+  return AppErrorHandler.invokeError(
+    `Something went wrong. Contact system administrator.`,
+    500
+  );
+};
+
 export const globalErrorHandler: ErrorRequestHandler = (
   error,
   request,
@@ -69,6 +91,8 @@ export const globalErrorHandler: ErrorRequestHandler = (
       cloneError = handleCastErrorDB(cloneError);
     if (cloneError.code === 11000)
       cloneError = handleDuplicateFieldsDB(cloneError);
+    if (cloneError.name === 'ValidationError')
+      cloneError = handleValidationErrorDB(cloneError);
 
     sendErrorProd(cloneError, response);
   }
