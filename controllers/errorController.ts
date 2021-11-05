@@ -1,4 +1,5 @@
 import { ErrorRequestHandler, Response } from 'express';
+import { AppErrorHandler } from '../utils/AppErrorHandler';
 import { ResponseStatus } from '../utils/responseStatus';
 
 type ErrorObject = {
@@ -8,6 +9,7 @@ type ErrorObject = {
   message: string;
   stack?: string;
   isOperational?: boolean;
+  name?: string;
 };
 
 const sendErrorDev = (error: ErrorObject, response: Response): void => {
@@ -26,12 +28,16 @@ const sendErrorProd = (error: ErrorObject, response: Response): void => {
       message: error.message,
     });
   } else {
-    console.error(`Error: `, error);
     response.status(500).json({
       status: ResponseStatus.ERROR,
       message: 'Something went wrong on the server',
     });
   }
+};
+
+const handleCastErrorDB = (error: any): AppErrorHandler => {
+  const message = `Invalid ${error.path}: ${error.value}.`;
+  return AppErrorHandler.invokeError(message, 400);
 };
 
 export const globalErrorHandler: ErrorRequestHandler = (
@@ -46,6 +52,11 @@ export const globalErrorHandler: ErrorRequestHandler = (
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(error, response);
   } else if (process.env.NODE_ENV === 'production') {
-    sendErrorProd(error, response);
+    let cloneError = { ...error };
+    cloneError.name = error.name;
+    if (cloneError.name === 'CastError') {
+      cloneError = handleCastErrorDB(cloneError);
+    }
+    sendErrorProd(cloneError, response);
   }
 };
