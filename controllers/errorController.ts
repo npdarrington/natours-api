@@ -34,6 +34,10 @@ const sendErrorDev = (error: ErrorObject, response: Response): void => {
   });
 };
 
+const contactSysAdmin = (): string => {
+  return `Something went wrong. Contact System Administrator.`;
+};
+
 const sendErrorProd = (error: ErrorObject, response: Response): void => {
   if (error.isOperational) {
     response.status(error.statusCode).json({
@@ -43,7 +47,7 @@ const sendErrorProd = (error: ErrorObject, response: Response): void => {
   } else {
     response.status(500).json({
       status: ResponseStatus.ERROR,
-      message: 'Something went wrong on the server',
+      message: contactSysAdmin(),
     });
   }
 };
@@ -54,9 +58,12 @@ const handleCastErrorDB = (error: ErrorObject): AppErrorHandler => {
 };
 
 const handleDuplicateFieldsDB = (error: ErrorObject): AppErrorHandler => {
-  const value = error.errmsg!.match(/(["'])(\\?.)*?\1/)![0];
-  const message = `Duplicate field value ${value}. Please use another value.`;
-  return AppErrorHandler.invokeError(message, 400);
+  if (error.errmsg) {
+    const value = error.errmsg.match(/(["'])(\\?.)*?\1/)![0];
+    const message = `Duplicate field value ${value}. Please use another value.`;
+    return AppErrorHandler.invokeError(message, 400);
+  }
+  return AppErrorHandler.invokeError(contactSysAdmin(), 500);
 };
 
 const handleValidationErrorDB = (error: ErrorObject): AppErrorHandler => {
@@ -65,10 +72,7 @@ const handleValidationErrorDB = (error: ErrorObject): AppErrorHandler => {
     const message = `Invalid input data: ${errors.join('. ')}`;
     return AppErrorHandler.invokeError(message, 400);
   }
-  return AppErrorHandler.invokeError(
-    `Something went wrong. Contact system administrator.`,
-    500
-  );
+  return AppErrorHandler.invokeError(contactSysAdmin(), 500);
 };
 
 export const globalErrorHandler: ErrorRequestHandler = (
