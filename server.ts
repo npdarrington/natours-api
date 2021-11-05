@@ -1,6 +1,7 @@
 import { app } from './app';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { AppErrorHandler } from './utils/AppErrorHandler';
 
 process.on('uncaughtException', (error: Error): void => {
   console.log(`${error.name} - ${error.message}`);
@@ -15,7 +16,15 @@ const dbConn: string | undefined = process.env.DATABASE?.replace(
 );
 
 if (dbConn) {
-  mongoose.connect(dbConn).then(() => console.log('DB connection successful'));
+  mongoose
+    .connect(dbConn)
+    .then(() => console.log('DB connection successful'))
+    .catch((error: Error) => {
+      AppErrorHandler.invokeError(
+        `The database did not connect. Contact System Admin.`,
+        500
+      );
+    });
 }
 
 const port = process.env.PORT || 3000;
