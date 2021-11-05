@@ -4,7 +4,8 @@
   "description": "Learning node, express and mongoDB",
   "main": "app.ts",
   "scripts": {
-    "start": "nodemon server.ts"
+    "start": "nodemon server.ts",
+    "start:prod": "NODE_ENV=production nodemon server.ts"
   },
   "repository": {
     "type": "git",
