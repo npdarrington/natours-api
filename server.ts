@@ -13,4 +13,14 @@ if (dbConn) {
 }
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`App running on Port ${port}`));
+const server = app.listen(port, () =>
+  console.log(`App running on Port ${port}`)
+);
+
+process.on('unhandledRejection', (error: Error) => {
+  console.log(`${error.name} - ${error.message}`);
+  console.log('UNHANDLED REJECTION! Shutting down...');
+  server.close(() => {
+    process.exit(1);
+  });
+});
