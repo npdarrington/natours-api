@@ -7,10 +7,12 @@ export class AppErrorHandler extends Error {
   ): AppErrorHandler {
     return new AppErrorHandler(message, statusCode);
   }
+
   public status: ResponseStatus;
   public isOperational: boolean;
+
   constructor(public message: string, public statusCode: number) {
-    super(message);
+    super();
     this.status = `${statusCode}`.startsWith('4')
       ? ResponseStatus.FAILURE
       : ResponseStatus.ERROR;
