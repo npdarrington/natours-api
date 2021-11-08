@@ -31,7 +31,7 @@ const userSchema = new Schema<User>({
     type: String,
     required: [true, 'A user must have a valid password'],
     trim: true,
-    minlength: 8,
+    minlength: [8, 'A password must have a minimum of 8 characters'],
   },
   passwordConfirm: {
     type: String,
