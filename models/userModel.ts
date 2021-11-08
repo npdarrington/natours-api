@@ -6,7 +6,7 @@ export interface User {
   email: string;
   photo?: string;
   password: string;
-  passwordConfirm?: string;
+  passwordConfirm: string;
 }
 
 const userSchema = new Schema<User>({
@@ -37,6 +37,12 @@ const userSchema = new Schema<User>({
     type: String,
     required: [true, 'A user must verify their passwords match'],
     trim: true,
+    validate: {
+      validator: function (this: { password: string }, value: string): boolean {
+        return this.password === value;
+      },
+      message: 'The password and passwordConfirm fields must be the same',
+    },
   },
 });
 
