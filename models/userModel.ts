@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
 
@@ -44,6 +45,14 @@ const userSchema = new Schema<User>({
       message: 'The password and passwordConfirm fields must be the same',
     },
   },
+});
+
+userSchema.pre('save', async function (next: Function) {
+  if (!this.isModified('password')) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
 });
 
 export const UserModel = model<User>('User', userSchema);
