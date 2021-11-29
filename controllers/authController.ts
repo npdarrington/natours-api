@@ -59,3 +59,30 @@ export const login = asyncTryCatch(
     });
   }
 );
+
+export const verifyUserLoggedIn = asyncTryCatch(
+  async (request: Request, response: Response, next: NextFunction) => {
+    // 1. Check for token
+    let token;
+
+    if (
+      request.headers.authorization &&
+      request.headers.authorization.startsWith('Bearer')
+    ) {
+      token = request.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return next(
+        AppErrorHandler.invokeError(
+          'You are not logged in! Please login to get access.',
+          401
+        )
+      );
+    }
+    // 2. validate token
+    // 3. Check if user exists
+    // 4. Check if user changed password after token was issued
+    next();
+  }
+);
