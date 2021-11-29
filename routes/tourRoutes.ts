@@ -6,8 +6,9 @@ import {
   updateTour,
   deleteTour,
 } from '../controllers/tourController';
+import { verifyUserLoggedIn } from '../controllers/authController';
 
 const router = express.Router();
-router.route('/').get(getAllTours).post(createTour);
+router.route('/').get(verifyUserLoggedIn, getAllTours).post(createTour);
 router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 export default router;
