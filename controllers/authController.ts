@@ -81,7 +81,27 @@ export const verifyUserLoggedIn = asyncTryCatch(
       );
     }
     // 2. validate token
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET!);
     // 3. Check if user exists
+    if (typeof decoded === 'string') {
+      return next(
+        AppErrorHandler.invokeError(
+          'This token could not be verified. Please login to get access.',
+          401
+        )
+      );
+    } else {
+      const verifyUser = UserModel.findById(decoded.id);
+
+      if (!verifyUser) {
+        return next(
+          AppErrorHandler.invokeError(
+            'The user belonging to that token no longer exist.',
+            401
+          )
+        );
+      }
+    }
     // 4. Check if user changed password after token was issued
     next();
   }
