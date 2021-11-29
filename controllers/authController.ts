@@ -6,6 +6,12 @@ import jwt from 'jsonwebtoken';
 
 import { AppErrorHandler } from '../utils/AppErrorHandler';
 
+const signToken = (id: string): string => {
+  return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
+    expiresIn: process.env.JWT_EXPIRES_IN!,
+  });
+};
+
 export const signup = asyncTryCatch(
   async (request: Request, response: Response, next: NextFunction) => {
     const { name, email, password, passwordConfirm }: User = request.body;
@@ -16,9 +22,7 @@ export const signup = asyncTryCatch(
       passwordConfirm,
     });
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET!, {
-      expiresIn: process.env.JWT_EXPIRES_IN!,
-    });
+    const token = signToken(newUser._id);
 
     response.status(201).json({
       status: ResponseStatus.SUCCESS,
@@ -48,7 +52,7 @@ export const login = asyncTryCatch(
       );
     }
 
-    const token = '';
+    const token = signToken(user._id);
     response.status(200).json({
       status: ResponseStatus.SUCCESS,
       token,
