@@ -8,7 +8,12 @@ export interface User {
   photo?: string;
   password: string;
   passwordConfirm: string;
-  correctPassword: (candidatePassword: string, userPassword: string) => boolean;
+  passwordChangedAt?: Date;
+  correctPassword: (
+    candidatePassword: string,
+    userPassword: string
+  ) => Promise<boolean>;
+  changedPasswordAfter: (JWTTimeStamp: number) => boolean;
 }
 
 const userSchema = new Schema<User>({
@@ -47,6 +52,7 @@ const userSchema = new Schema<User>({
       message: 'The password and passwordConfirm fields must be the same',
     },
   },
+  passwordChangedAt: Date,
 });
 
 userSchema.pre('save', async function (next: Function) {
@@ -62,6 +68,15 @@ userSchema.methods.correctPassword = async function (
   userPassword
 ): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimeStamp): boolean {
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = this.passwordChangedAt.getTime() / 1000;
+    return JWTTimeStamp < changedTimeStamp;
+  }
+
+  return false;
 };
 
 export const UserModel = model<User>('User', userSchema);
