@@ -75,6 +75,9 @@ const handleValidationErrorDB = (error: ErrorObject): AppErrorHandler => {
   return AppErrorHandler.invokeError(contactSysAdmin(), 500);
 };
 
+const handleJWTError = (error: ErrorObject): AppErrorHandler =>
+  AppErrorHandler.invokeError('Invalid token. Please log in again.', 401);
+
 export const globalErrorHandler: ErrorRequestHandler = (
   error,
   request,
@@ -97,6 +100,8 @@ export const globalErrorHandler: ErrorRequestHandler = (
       cloneError = handleDuplicateFieldsDB(cloneError);
     if (cloneError.name === 'ValidationError')
       cloneError = handleValidationErrorDB(cloneError);
+    if (cloneError.name === 'JsonWebTokenError')
+      cloneError = handleJWTError(cloneError);
 
     sendErrorProd(cloneError, response);
   }
