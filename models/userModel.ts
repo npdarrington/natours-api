@@ -8,6 +8,7 @@ export interface User {
   photo?: string;
   password: string;
   passwordConfirm: string;
+  correctPassword: (candidatePassword: string, userPassword: string) => boolean;
 }
 
 const userSchema = new Schema<User>({
@@ -33,6 +34,7 @@ const userSchema = new Schema<User>({
     required: [true, 'A user must have a valid password'],
     trim: true,
     minlength: [8, 'A password must have a minimum of 8 characters'],
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -54,5 +56,12 @@ userSchema.pre('save', async function (next: Function) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+): Promise<boolean> {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 export const UserModel = model<User>('User', userSchema);
