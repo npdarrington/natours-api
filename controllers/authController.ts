@@ -62,7 +62,6 @@ export const login = asyncTryCatch(
 
 export const verifyUserLoggedIn = asyncTryCatch(
   async (request: Request, response: Response, next: NextFunction) => {
-    // 1. Check for token
     let token;
 
     if (
@@ -80,9 +79,9 @@ export const verifyUserLoggedIn = asyncTryCatch(
         )
       );
     }
-    // 2. validate token
+
     const decoded = await jwt.verify(token, process.env.JWT_SECRET!);
-    // 3. Check if user exists
+
     if (typeof decoded === 'string') {
       return next(
         AppErrorHandler.invokeError(
@@ -90,19 +89,29 @@ export const verifyUserLoggedIn = asyncTryCatch(
           401
         )
       );
-    } else {
-      const verifyUser = UserModel.findById(decoded.id);
-
-      if (!verifyUser) {
-        return next(
-          AppErrorHandler.invokeError(
-            'The user belonging to that token no longer exist.',
-            401
-          )
-        );
-      }
     }
-    // 4. Check if user changed password after token was issued
+
+    const verifyUser = await UserModel.findById(decoded.id);
+
+    if (!verifyUser) {
+      return next(
+        AppErrorHandler.invokeError(
+          'The user belonging to that token no longer exist.',
+          401
+        )
+      );
+    }
+
+    if (verifyUser.changedPasswordAfter(decoded.iat!)) {
+      return next(
+        AppErrorHandler.invokeError(
+          'User recently changed password. Please log in again.',
+          401
+        )
+      );
+    }
+
+    Object.assign(request, { user: verifyUser });
     next();
   }
 );
