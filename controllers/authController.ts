@@ -4,6 +4,8 @@ import { asyncTryCatch } from '../utils/asyncTryCatch';
 import { ResponseStatus } from '../utils/responseStatus';
 import jwt from 'jsonwebtoken';
 
+import { AppErrorHandler } from '../utils/AppErrorHandler';
+
 export const signup = asyncTryCatch(
   async (request: Request, response: Response, next: NextFunction) => {
     const { name, email, password, passwordConfirm }: User = request.body;
@@ -24,6 +26,32 @@ export const signup = asyncTryCatch(
       data: {
         user: newUser,
       },
+    });
+  }
+);
+
+export const login = asyncTryCatch(
+  async (request: Request, response: Response, next: NextFunction) => {
+    const { email, password } = request.body;
+
+    if (!email || !password) {
+      return next(
+        AppErrorHandler.invokeError('You must enter an email and password', 400)
+      );
+    }
+
+    const user = await UserModel.findOne({ email }).select('+password');
+
+    if (!user || !(await user!.correctPassword(password, user!.password))) {
+      return next(
+        AppErrorHandler.invokeError('Incorrect email or password', 401)
+      );
+    }
+
+    const token = '';
+    response.status(200).json({
+      status: ResponseStatus.SUCCESS,
+      token,
     });
   }
 );
