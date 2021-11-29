@@ -75,8 +75,14 @@ const handleValidationErrorDB = (error: ErrorObject): AppErrorHandler => {
   return AppErrorHandler.invokeError(contactSysAdmin(), 500);
 };
 
-const handleJWTError = (error: ErrorObject): AppErrorHandler =>
+const handleJWTError = (): AppErrorHandler =>
   AppErrorHandler.invokeError('Invalid token. Please log in again.', 401);
+
+const handleJWTExpiredError = (): AppErrorHandler =>
+  AppErrorHandler.invokeError(
+    'Your token has expired. Please log in again.',
+    401
+  );
 
 export const globalErrorHandler: ErrorRequestHandler = (
   error,
@@ -100,8 +106,9 @@ export const globalErrorHandler: ErrorRequestHandler = (
       cloneError = handleDuplicateFieldsDB(cloneError);
     if (cloneError.name === 'ValidationError')
       cloneError = handleValidationErrorDB(cloneError);
-    if (cloneError.name === 'JsonWebTokenError')
-      cloneError = handleJWTError(cloneError);
+    if (cloneError.name === 'JsonWebTokenError') cloneError = handleJWTError();
+    if (cloneError.name === 'TokenExpiredError')
+      error = handleJWTExpiredError();
 
     sendErrorProd(cloneError, response);
   }
